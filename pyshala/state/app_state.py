@@ -1,0 +1,337 @@
+"""Application state management."""
+
+from typing import Any, Optional
+
+import reflex as rx
+from pydantic import BaseModel
+
+from ..services.judge0_client import get_judge0_client
+from ..services.lesson_loader import get_lesson_loader
+from ..services.progress_db import get_progress_db
+
+
+class ModuleInfo(BaseModel):
+    """Module information for display."""
+    id: str = ""
+    name: str = ""
+    description: str = ""
+    order: int = 0
+    lesson_count: int = 0
+
+
+class LessonInfo(BaseModel):
+    """Lesson information for lists."""
+    id: str = ""
+    title: str = ""
+    description: str = ""
+    order: int = 0
+
+
+class TestCaseInfo(BaseModel):
+    """Test case information."""
+    stdin: str = ""
+    expected_output: str = ""
+    description: str = ""
+    hidden: bool = False
+
+
+class TestResultInfo(BaseModel):
+    """Test result information."""
+    test_index: int = 0
+    description: str = ""
+    passed: bool = False
+    stdin: str = ""
+    expected_output: str = ""
+    actual_output: str = ""
+    error_message: str = ""
+
+
+class AppState(rx.State):
+    """Global application state."""
+
+    # Module list for home page
+    modules: list[ModuleInfo] = []
+
+    # Current module details
+    current_module_id: str = ""
+    current_module_name: str = ""
+    current_module_description: str = ""
+    current_module_lesson_count: int = 0
+    current_module_lessons: list[LessonInfo] = []
+
+    # Current lesson details
+    current_lesson_id: str = ""
+    current_lesson_title: str = ""
+    current_lesson_description: str = ""
+    current_lesson_instructions: str = ""
+    current_lesson_order: int = 0
+    current_lesson_index: int = 0
+    current_lesson_total: int = 0
+    current_lesson_test_cases: list[TestCaseInfo] = []
+
+    # Progress tracking
+    completed_lessons: list[str] = []
+
+    # Code editor state
+    current_code: str = ""
+    starter_code: str = ""
+
+    # Test execution state
+    is_running: bool = False
+    test_results: list[TestResultInfo] = []
+    tests_all_passed: bool = False
+    tests_passed_count: int = 0
+    tests_total_count: int = 0
+
+    # Error handling
+    error_message: str = ""
+
+    def load_modules(self) -> None:
+        """Load all modules from the lesson loader."""
+        loader = get_lesson_loader()
+        modules = loader.get_all_modules()
+
+        self.modules = [
+            ModuleInfo(
+                id=m.id,
+                name=m.name,
+                description=m.description,
+                order=m.order,
+                lesson_count=len(m.lessons),
+            )
+            for m in modules
+        ]
+
+    async def load_progress(self) -> None:
+        """Load progress from database."""
+        db = get_progress_db()
+        completed = await db.get_completed_lessons()
+        self.completed_lessons = list(completed)
+
+    def load_module_from_route(self) -> None:
+        """Load module based on URL parameter."""
+        module_id = self.router.page.params.get("module_id", "")
+        if module_id:
+            self._load_module(module_id)
+
+    def _load_module(self, module_id: str) -> None:
+        """Load a specific module by ID."""
+        loader = get_lesson_loader()
+        module = loader.get_module(module_id)
+
+        if module:
+            self.current_module_id = module.id
+            self.current_module_name = module.name
+            self.current_module_description = module.description
+            self.current_module_lesson_count = len(module.lessons)
+            self.current_module_lessons = [
+                LessonInfo(
+                    id=lesson.id,
+                    title=lesson.title,
+                    description=lesson.description,
+                    order=lesson.order,
+                )
+                for lesson in module.lessons
+            ]
+        else:
+            self.current_module_id = ""
+            self.current_module_name = ""
+            self.current_module_description = ""
+            self.current_module_lesson_count = 0
+            self.current_module_lessons = []
+            self.error_message = f"Module not found: {module_id}"
+
+    def load_lesson_from_route(self) -> None:
+        """Load lesson based on URL parameters."""
+        module_id = self.router.page.params.get("module_id", "")
+        lesson_id = self.router.page.params.get("lesson_id", "")
+        if module_id and lesson_id:
+            self._load_lesson(module_id, lesson_id)
+
+    def _load_lesson(self, module_id: str, lesson_id: str) -> None:
+        """Load a specific lesson by module and lesson ID."""
+        loader = get_lesson_loader()
+        lesson = loader.get_lesson(module_id, lesson_id)
+        module = loader.get_module(module_id)
+
+        if lesson and module:
+            # Find lesson index
+            lesson_index = 0
+            for i, l in enumerate(module.lessons):
+                if l.id == lesson_id:
+                    lesson_index = i
+                    break
+
+            # Set lesson details
+            self.current_lesson_id = lesson.id
+            self.current_lesson_title = lesson.title
+            self.current_lesson_description = lesson.description
+            self.current_lesson_instructions = lesson.instructions
+            self.current_lesson_order = lesson.order
+            self.current_lesson_index = lesson_index
+            self.current_lesson_total = len(module.lessons)
+            self.current_lesson_test_cases = [
+                TestCaseInfo(
+                    stdin=tc.stdin,
+                    expected_output=tc.expected_output,
+                    description=tc.description,
+                    hidden=tc.hidden,
+                )
+                for tc in lesson.test_cases
+            ]
+
+            # Set module details
+            self.current_module_id = module.id
+            self.current_module_name = module.name
+            self.current_module_description = module.description
+            self.current_module_lessons = [
+                LessonInfo(
+                    id=l.id,
+                    title=l.title,
+                    description=l.description,
+                    order=l.order,
+                )
+                for l in module.lessons
+            ]
+
+            # Set code editor content
+            self.starter_code = lesson.starter_code
+            self.current_code = lesson.starter_code
+
+            # Reset test results
+            self.test_results = []
+            self.tests_all_passed = False
+            self.tests_passed_count = 0
+            self.tests_total_count = 0
+            self.error_message = ""
+        else:
+            self.current_lesson_id = ""
+            self.current_lesson_title = ""
+            self.error_message = f"Lesson not found: {module_id}/{lesson_id}"
+
+    def set_code(self, code: str) -> None:
+        """Update the current code in the editor."""
+        self.current_code = code
+
+    def reset_code(self) -> None:
+        """Reset code to starter code."""
+        self.current_code = self.starter_code
+        self.test_results = []
+        self.tests_all_passed = False
+        self.tests_passed_count = 0
+        self.tests_total_count = 0
+
+    async def run_code(self) -> None:
+        """Execute the current code against test cases."""
+        if self.is_running:
+            return
+
+        self.is_running = True
+        self.test_results = []
+
+        try:
+            client = get_judge0_client()
+            loader = get_lesson_loader()
+
+            # Get lesson for data files
+            lesson = loader.get_lesson(
+                self.current_module_id,
+                self.current_lesson_id,
+            )
+
+            data_files = lesson.data_files if lesson else []
+
+            # Convert test cases to dict format for judge0 client
+            test_cases_dict = [
+                {
+                    "stdin": tc.stdin,
+                    "expected_output": tc.expected_output,
+                    "description": tc.description,
+                    "hidden": tc.hidden,
+                }
+                for tc in self.current_lesson_test_cases
+            ]
+
+            # Run tests
+            results = await client.run_tests(
+                source_code=self.current_code,
+                test_cases=test_cases_dict,
+                data_files=data_files,
+            )
+
+            # Store results
+            self.test_results = [
+                TestResultInfo(
+                    test_index=tr.test_index,
+                    description=tr.description,
+                    passed=tr.passed,
+                    stdin=tr.stdin if not tr.hidden else "[hidden]",
+                    expected_output=tr.expected_output if not tr.hidden else "[hidden]",
+                    actual_output=tr.actual_output,
+                    error_message=tr.error_message,
+                )
+                for tr in results.test_results
+            ]
+            self.tests_all_passed = results.all_passed
+            self.tests_passed_count = results.passed_count
+            self.tests_total_count = results.total_tests
+
+            # Mark as completed if all tests pass
+            if results.all_passed:
+                await self._mark_completed()
+
+        except Exception as e:
+            self.error_message = f"Error running code: {str(e)}"
+            self.test_results = []
+            self.tests_all_passed = False
+            self.tests_passed_count = 0
+            self.tests_total_count = 0
+        finally:
+            self.is_running = False
+
+    async def _mark_completed(self) -> None:
+        """Mark the current lesson as completed."""
+        if self.current_module_id and self.current_lesson_id:
+            full_id = f"{self.current_module_id}/{self.current_lesson_id}"
+            db = get_progress_db()
+            await db.mark_completed(full_id)
+
+            if full_id not in self.completed_lessons:
+                self.completed_lessons = self.completed_lessons + [full_id]
+
+    @rx.var
+    def has_next_lesson(self) -> bool:
+        """Check if there's a next lesson."""
+        return self.current_lesson_index < self.current_lesson_total - 1
+
+    @rx.var
+    def has_previous_lesson(self) -> bool:
+        """Check if there's a previous lesson."""
+        return self.current_lesson_index > 0
+
+    @rx.var
+    def next_lesson_url(self) -> str:
+        """Get the next lesson URL or empty string."""
+        if not self.has_next_lesson:
+            return ""
+        next_idx = self.current_lesson_index + 1
+        if next_idx < len(self.current_module_lessons):
+            next_lesson = self.current_module_lessons[next_idx]
+            return f"/lesson/{self.current_module_id}/{next_lesson.id}"
+        return ""
+
+    @rx.var
+    def previous_lesson_url(self) -> str:
+        """Get the previous lesson URL or empty string."""
+        if not self.has_previous_lesson:
+            return ""
+        prev_idx = self.current_lesson_index - 1
+        if prev_idx >= 0 and prev_idx < len(self.current_module_lessons):
+            prev_lesson = self.current_module_lessons[prev_idx]
+            return f"/lesson/{self.current_module_id}/{prev_lesson.id}"
+        return ""
+
+    @rx.var
+    def lesson_number(self) -> int:
+        """Get the current lesson number (1-indexed)."""
+        return self.current_lesson_index + 1

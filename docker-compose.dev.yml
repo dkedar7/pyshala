@@ -1,0 +1,68 @@
+# Docker Compose for local development (without building PyShala image)
+# Use this for rapid development with hot reloading
+
+services:
+  # Judge0 CE - Code execution engine
+  judge0:
+    image: judge0/judge0:1.13.1
+    ports:
+      - "2358:2358"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=judge0
+      - POSTGRES_PASSWORD=judge0_password
+      - POSTGRES_DB=judge0
+      - ENABLE_WAIT_RESULT=true
+      - ENABLE_NETWORK=false
+      - CPU_TIME_LIMIT=10
+      - CPU_EXTRA_TIME=2
+      - WALL_TIME_LIMIT=15
+      - MEMORY_LIMIT=128000
+    privileged: true
+    depends_on:
+      - redis
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2358/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # Judge0 worker
+  judge0-worker:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=judge0
+      - POSTGRES_PASSWORD=judge0_password
+      - POSTGRES_DB=judge0
+    privileged: true
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+
+  # Redis for Judge0
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # PostgreSQL for Judge0
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=judge0
+      - POSTGRES_PASSWORD=judge0_password
+      - POSTGRES_DB=judge0
+    restart: unless-stopped

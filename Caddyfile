@@ -1,0 +1,48 @@
+# Caddyfile for PyShala
+# Serves static frontend and proxies API requests to Reflex backend
+
+:{$PORT:8080} {
+    # Serve static files for frontend
+    handle /static/* {
+        root * /srv
+        file_server
+    }
+
+    # Proxy API requests to Reflex backend
+    handle /_next/* {
+        reverse_proxy localhost:3000
+    }
+
+    handle /api/* {
+        reverse_proxy localhost:8000
+    }
+
+    handle /_upload/* {
+        reverse_proxy localhost:8000
+    }
+
+    handle /_event/* {
+        reverse_proxy localhost:8000
+    }
+
+    # WebSocket for Reflex state updates
+    handle /ws {
+        reverse_proxy localhost:8000
+    }
+
+    # Default: serve frontend or proxy to backend
+    handle {
+        try_files {path} {path}/ /index.html
+        root * /srv/static
+        file_server
+    }
+
+    # Enable compression
+    encode gzip
+
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}
