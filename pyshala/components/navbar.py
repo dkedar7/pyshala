@@ -1,6 +1,13 @@
 """Navigation bar component."""
 
+import os
+
 import reflex as rx
+
+
+def get_app_name() -> str:
+    """Get the application name from environment or default."""
+    return os.getenv("APP_NAME", "PyShala")
 
 
 def navbar() -> rx.Component:
@@ -15,7 +22,7 @@ def navbar() -> rx.Component:
                 rx.hstack(
                     rx.icon("graduation-cap", size=28, color="white"),
                     rx.text(
-                        "PyShala",
+                        get_app_name(),
                         font_size="1.5rem",
                         font_weight="bold",
                         color="white",

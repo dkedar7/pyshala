@@ -46,6 +46,8 @@ pyshala --help
 | `--max-execution-time` | `10.0` | Max code execution time (seconds) |
 | `--python-path` | Current interpreter | Python interpreter for execution |
 | `--loglevel` | `info` | Logging level (debug/info/warning/error) |
+| `--app-name` | `Learn Python` | Application name displayed in the UI |
+| `--app-description` | (see below) | Description displayed on home page |
 | `--version`, `-v` | | Show version and exit |
 
 ### Python API
@@ -190,4 +192,4 @@ python -m build
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License

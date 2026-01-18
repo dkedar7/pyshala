@@ -1,9 +1,19 @@
 """Home page - displays all available modules."""
 
+import os
+
 import reflex as rx
 
 from ..components.navbar import navbar
 from ..state.app_state import AppState, ModuleInfo
+
+
+def get_app_description() -> str:
+    """Get the application description from environment or default."""
+    return os.getenv(
+        "APP_DESCRIPTION",
+        "Interactive lessons with hands-on coding exercises and instant feedback"
+    )
 
 
 def module_card(module: ModuleInfo) -> rx.Component:
@@ -115,7 +125,7 @@ def index() -> rx.Component:
                             text_align="center",
                         ),
                         rx.text(
-                            "Interactive lessons with hands-on coding exercises and instant feedback",
+                            get_app_description(),
                             color="#6b7280",
                             font_size="1.1rem",
                             text_align="center",

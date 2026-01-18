@@ -61,6 +61,18 @@ def main() -> int:
     )
 
     parser.add_argument(
+        "--app-name",
+        default="Learn Python",
+        help="Application name displayed in the UI (default: Learn Python)",
+    )
+
+    parser.add_argument(
+        "--app-description",
+        default="Interactive lessons with hands-on coding exercises and instant feedback",
+        help="Application description displayed on the home page",
+    )
+
+    parser.add_argument(
         "--env",
         choices=["dev", "prod"],
         default=None,
@@ -89,6 +101,8 @@ def main() -> int:
             max_execution_time=args.max_execution_time,
             python_path=args.python_path,
             loglevel=args.loglevel,
+            app_name=args.app_name,
+            app_description=args.app_description,
         )
         app.run(env=args.env)
         return 0
