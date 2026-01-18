@@ -9,6 +9,7 @@ def code_editor(
     on_change: rx.EventHandler,
     height: str = "400px",
     theme: str = "vs-dark",
+    editor_key: str = "",
 ) -> rx.Component:
     """Create a code editor component.
 
@@ -17,13 +18,15 @@ def code_editor(
         on_change: Event handler for code changes.
         height: Editor height.
         theme: Editor theme (vs-dark, vs-light, hc-black).
+        editor_key: Unique key to force re-mount on lesson change.
 
     Returns:
         Code editor component.
     """
     return rx.box(
         monaco(
-            value=code,
+            key=editor_key,
+            default_value=code,
             default_language="python",
             theme=theme,
             on_change=on_change,
@@ -40,7 +43,7 @@ def code_editor(
 def editor_toolbar(
     on_run: rx.EventHandler,
     on_reset: rx.EventHandler,
-    is_running: bool,
+    is_running: rx.Var[bool],
 ) -> rx.Component:
     """Create the editor toolbar with run and reset buttons.
 
