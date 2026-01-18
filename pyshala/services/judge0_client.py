@@ -268,7 +268,7 @@ class Judge0Client:
             stdout=decode_field(data.get("stdout")),
             stderr=decode_field(data.get("stderr")),
             compile_output=decode_field(data.get("compile_output")),
-            message=data.get("message") or "",
+            message=decode_field(data.get("message")),
             time=float(data["time"]) if data.get("time") else None,
             memory=int(data["memory"]) if data.get("memory") else None,
         )
