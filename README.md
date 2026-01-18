@@ -6,50 +6,89 @@ A self-hosted interactive Python training platform for delivering custom lessons
 
 - **Interactive Lessons**: Write and run Python code directly in the browser
 - **Automated Testing**: Instant feedback with pass/fail results for each test case
-- **Progress Tracking**: Track completed lessons across sessions
 - **Custom Content**: Create your own lessons using simple YAML files
 - **Data File Support**: Lessons can include CSV, JSON, and other data files
-- **Self-Hosted**: Deploy on your own infrastructure with Docker
+- **Self-Hosted**: Deploy on your own infrastructure
+- **No External Dependencies**: Code execution runs locally (no Docker required)
 
 ## Quick Start
 
-### Development Setup
+### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/dkedar7/pyshala.git
-   cd pyshala
-   ```
+```bash
+pip install pyshala
+```
 
-2. **Start Judge0 (code execution engine)**
-   ```bash
-   docker compose -f docker-compose.dev.yml up -d
-   ```
+### Command Line
 
-3. **Install Python dependencies**
-   ```bash
-   pip install -e .
-   ```
+```bash
+# Run with default lessons directory (./lessons)
+pyshala
 
-4. **Run the Reflex app**
-   ```bash
-   reflex run
-   ```
+# Run with custom lessons path
+pyshala ./my_lessons
 
-5. **Open your browser** at http://localhost:3000
+# Run with custom port
+pyshala ./my_lessons --port 8080
 
-### Production Deployment
+# See all options
+pyshala --help
+```
 
-1. **Build and run with Docker Compose**
-   ```bash
-   docker compose up -d
-   ```
+**CLI Options:**
 
-2. **Access the app** at http://localhost:8080
+| Option | Default | Description |
+|--------|---------|-------------|
+| `lessons_path` | `./lessons` | Path to lessons directory |
+| `--host` | `0.0.0.0` | Host address to bind |
+| `--port`, `-p` | `3000` | Frontend port |
+| `--backend-port` | `8000` | Backend API port |
+| `--max-execution-time` | `10.0` | Max code execution time (seconds) |
+| `--python-path` | Current interpreter | Python interpreter for execution |
+| `--loglevel` | `info` | Logging level (debug/info/warning/error) |
+| `--version`, `-v` | | Show version and exit |
+
+### Python API
+
+```python
+from pyshala import PyShala
+
+# Create and run the app with your lessons
+app = PyShala(lessons_path="./my_lessons")
+app.run()
+```
+
+Open your browser at http://localhost:3000
+
+**Configuration Options:**
+
+```python
+from pyshala import PyShala
+
+app = PyShala(
+    lessons_path="./lessons",      # Path to lesson YAML files
+    host="0.0.0.0",                # Host address
+    port=3000,                     # Frontend port
+    backend_port=8000,             # Backend API port
+    max_execution_time=10.0,       # Max code execution time (seconds)
+    python_path="/usr/bin/python3", # Python interpreter for execution
+    loglevel="info",               # Logging level
+)
+app.run()
+```
+
+**Alternative: Using create_app**
+
+```python
+from pyshala import create_app
+
+app = create_app(lessons_path="./my_lessons", port=8080)
+app.run()
+```
 
 ## Creating Lessons
 
-Lessons are defined using YAML files in the `lessons/` directory.
+Lessons are defined using YAML files organized into modules.
 
 ### Directory Structure
 
@@ -115,50 +154,39 @@ data_files:
 | `description` | Test description shown to learner |
 | `hidden` | If true, test details hidden from learner |
 
-## Configuration
+## Development
 
-### Environment Variables
+### Setup
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `JUDGE0_URL` | `http://localhost:2358` | Judge0 API endpoint |
-| `LESSONS_PATH` | `./lessons` | Path to lesson files |
-| `DATABASE_PATH` | `./data/progress.db` | SQLite database path |
-| `API_URL` | `http://localhost:8080` | Public Reflex API URL |
-| `MAX_EXECUTION_TIME` | `10` | Max code execution time (seconds) |
-| `MAX_MEMORY_KB` | `128000` | Max memory for code execution |
-
-## Architecture
-
+```bash
+git clone https://github.com/dkedar7/pyshala.git
+cd pyshala
+pip install -e ".[dev]"
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    PyShala Container                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐ │
-│  │   Caddy     │  │   Reflex    │  │  Lesson Loader  │ │
-│  │   (Proxy)   │──│   Backend   │──│    (YAML)       │ │
-│  └─────────────┘  └─────────────┘  └─────────────────┘ │
-│         │                │                              │
-│         │                ▼                              │
-│         │        ┌─────────────┐                       │
-│         │        │   SQLite    │                       │
-│         │        │  (Progress) │                       │
-│         │        └─────────────┘                       │
-└─────────┼───────────────────────────────────────────────┘
-          │
-          ▼
-┌─────────────────┐
-│    Judge0 CE    │
-│ (Code Execution)│
-└─────────────────┘
+
+### Running Directly with Reflex
+
+```bash
+reflex run
+```
+
+### Running Tests
+
+```bash
+pytest tests/ -v
+```
+
+### Building the Package
+
+```bash
+python -m build
 ```
 
 ## Tech Stack
 
 - **Frontend/Backend**: [Reflex](https://reflex.dev) (Python)
 - **Code Editor**: Monaco Editor via reflex-monaco
-- **Code Execution**: [Judge0 CE](https://judge0.com)
-- **Database**: SQLite (progress tracking)
-- **Reverse Proxy**: Caddy
+- **Code Execution**: Local Python subprocess (sandboxed)
 
 ## License
 
