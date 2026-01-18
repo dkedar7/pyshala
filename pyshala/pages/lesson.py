@@ -108,6 +108,7 @@ def lesson_page() -> rx.Component:
                         padding="1.5rem",
                         overflow_y="auto",
                         height="calc(100vh - 60px)",
+                        background="white",
                     ),
                     # Right column - Code editor and results
                     rx.box(
@@ -123,6 +124,7 @@ def lesson_page() -> rx.Component:
                                 code=AppState.current_code,
                                 on_change=AppState.set_code,
                                 height="350px",
+                                editor_key=AppState.editor_key,
                             ),
                             # Test results
                             test_results(
@@ -158,5 +160,4 @@ def lesson_page() -> rx.Component:
         width="100%",
         height="100vh",
         overflow="hidden",
-        on_mount=[AppState.load_lesson_from_route, AppState.load_progress],
     )
