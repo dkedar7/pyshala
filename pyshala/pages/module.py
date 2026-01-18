@@ -39,7 +39,7 @@ def lesson_row(lesson: LessonInfo) -> rx.Component:
             ),
             rx.spacer(),
             rx.hstack(
-                rx.badge("Start", color_scheme="purple", size="1"),
+                rx.badge("Start", color_scheme="blue", size="1"),
                 rx.icon("chevron-right", size=16, color="#9ca3af"),
                 spacing="2",
                 align="center",
@@ -50,8 +50,8 @@ def lesson_row(lesson: LessonInfo) -> rx.Component:
             border_radius="0.5rem",
             border="1px solid #e5e7eb",
             _hover={
-                "border_color": "#667eea",
-                "box_shadow": "0 2px 8px rgba(102, 126, 234, 0.1)",
+                "border_color": "#3b82f6",
+                "box_shadow": "0 2px 8px rgba(59, 130, 246, 0.1)",
             },
             transition="all 0.2s ease",
             align="center",
@@ -75,8 +75,8 @@ def module_page() -> rx.Component:
                 # Back link
                 rx.link(
                     rx.hstack(
-                        rx.icon("arrow-left", size=16, color="#667eea"),
-                        rx.text("Back to Modules", color="#667eea"),
+                        rx.icon("arrow-left", size=16, color="#3b82f6"),
+                        rx.text("Back to Modules", color="#3b82f6"),
                         spacing="1",
                         align="center",
                     ),
@@ -87,10 +87,10 @@ def module_page() -> rx.Component:
                 rx.box(
                     rx.vstack(
                         rx.hstack(
-                            rx.icon("book-open", size=32, color="#667eea"),
+                            rx.icon("book-open", size=32, color="#3b82f6"),
                             rx.badge(
                                 f"{AppState.current_module_lesson_count} lessons",
-                                color_scheme="purple",
+                                color_scheme="blue",
                                 size="2",
                             ),
                             spacing="3",
@@ -136,5 +136,4 @@ def module_page() -> rx.Component:
             background="#f9fafb",
         ),
         width="100%",
-        on_mount=[AppState.load_module_from_route, AppState.load_progress],
     )

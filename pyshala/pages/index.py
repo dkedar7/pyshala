@@ -19,11 +19,11 @@ def module_card(module: ModuleInfo) -> rx.Component:
         rx.box(
             rx.vstack(
                 rx.hstack(
-                    rx.icon("book-open", size=24, color="#667eea"),
+                    rx.icon("book-open", size=24, color="#3b82f6"),
                     rx.spacer(),
                     rx.badge(
                         f"{module.lesson_count} lessons",
-                        color_scheme="purple",
+                        color_scheme="blue",
                         size="1",
                     ),
                     width="100%",

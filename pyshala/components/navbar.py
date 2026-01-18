@@ -42,7 +42,7 @@ def navbar() -> rx.Component:
             padding_y="1rem",
             align="center",
         ),
-        background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background="#3b82f6",
         width="100%",
         position="sticky",
         top="0",

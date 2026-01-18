@@ -64,7 +64,7 @@ def progress_bar(completed: int, total: int) -> rx.Component:
             rx.box(
                 width=f"{percentage}%",
                 height="100%",
-                background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                background="#3b82f6",
                 border_radius="9999px",
                 transition="width 0.3s ease",
             ),

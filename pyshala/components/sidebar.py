@@ -37,7 +37,7 @@ def lesson_item(
                 lesson.title,
                 font_size="0.9rem",
                 font_weight=rx.cond(is_current, "600", "400"),
-                color=rx.cond(is_current, "#667eea", "#374151"),
+                color=rx.cond(is_current, "#3b82f6", "#374151"),
             ),
             spacing="2",
             width="100%",
@@ -45,10 +45,10 @@ def lesson_item(
             border_radius="0.375rem",
             background=rx.cond(
                 is_current,
-                "rgba(102, 126, 234, 0.1)",
+                "rgba(59, 130, 246, 0.1)",
                 "transparent",
             ),
-            _hover={"background": "rgba(102, 126, 234, 0.05)"},
+            _hover={"background": "rgba(59, 130, 246, 0.05)"},
         ),
         href="/lesson/" + module_id + "/" + lesson.id,
         width="100%",
@@ -80,7 +80,7 @@ def sidebar(
             # Module header
             rx.hstack(
                 rx.link(
-                    rx.icon("arrow-left", size=18, color="#667eea"),
+                    rx.icon("arrow-left", size=18, color="#3b82f6"),
                     href="/module/" + module_id,
                 ),
                 rx.text(
