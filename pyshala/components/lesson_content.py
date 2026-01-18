@@ -67,6 +67,42 @@ def lesson_content(instructions: str) -> rx.Component:
                     as_="li",
                     margin_bottom="0.25rem",
                     line_height="1.6",
+                    color="#374151",
+                ),
+                "table": lambda children: rx.box(
+                    children,
+                    as_="table",
+                    width="100%",
+                    margin_y="1rem",
+                    border_collapse="collapse",
+                ),
+                "thead": lambda children: rx.box(
+                    children,
+                    as_="thead",
+                    background="#f3f4f6",
+                ),
+                "tbody": lambda children: rx.box(
+                    children,
+                    as_="tbody",
+                ),
+                "tr": lambda children: rx.box(
+                    children,
+                    as_="tr",
+                    border_bottom="1px solid #e5e7eb",
+                ),
+                "th": lambda text: rx.box(
+                    text,
+                    as_="th",
+                    padding="0.75rem 1rem",
+                    text_align="left",
+                    font_weight="600",
+                    color="#1f2937",
+                ),
+                "td": lambda text: rx.box(
+                    text,
+                    as_="td",
+                    padding="0.75rem 1rem",
+                    color="#374151",
                 ),
             },
         ),
@@ -96,7 +132,7 @@ def lesson_header(
         rx.hstack(
             rx.badge(
                 f"Lesson {lesson_number} of {total_lessons}",
-                color_scheme="purple",
+                color_scheme="blue",
                 size="2",
             ),
             width="100%",
