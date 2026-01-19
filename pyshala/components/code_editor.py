@@ -65,8 +65,8 @@ def editor_toolbar(
                     spacing="1",
                 ),
                 rx.hstack(
-                    rx.icon("play", size=14),
-                    rx.text("Run Code", font_size="0.8rem"),
+                    rx.icon("send", size=14),
+                    rx.text("Submit", font_size="0.8rem"),
                     spacing="1",
                 ),
             ),

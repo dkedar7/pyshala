@@ -46,6 +46,29 @@ class TestResultInfo(BaseModel):
     error_message: str = ""
 
 
+class QuestionOptionInfo(BaseModel):
+    """Question option for display."""
+    id: str = ""
+    text: str = ""
+
+
+class QuestionInfo(BaseModel):
+    """Question information for display."""
+    id: str = ""
+    type: str = ""  # "mcq" or "text"
+    text: str = ""
+    options: list[QuestionOptionInfo] = []
+    multi_select: bool = False
+
+
+class QuestionResultInfo(BaseModel):
+    """Result for a single question."""
+    question_id: str = ""
+    correct: bool = False
+    user_answer: list[str] = []
+    correct_answer: list[str] = []
+
+
 class AppState(rx.State):
     """Global application state."""
 
@@ -90,6 +113,16 @@ class AppState(rx.State):
     # UI state
     sidebar_collapsed: bool = False
     dark_mode: bool = False
+
+    # Quiz state
+    current_lesson_type: str = "code"  # "code" or "quiz"
+    current_questions: list[QuestionInfo] = []
+    quiz_responses: dict[str, list[str]] = {}  # {question_id: [selected_answers]}
+    quiz_results: dict[str, QuestionResultInfo] = {}  # {question_id: result}
+    quiz_submitted: bool = False
+    quiz_all_correct: bool = False
+    quiz_correct_count: int = 0
+    quiz_total_count: int = 0
 
     def toggle_theme(self) -> None:
         """Toggle between light and dark theme."""
@@ -208,7 +241,10 @@ class AppState(rx.State):
                 for l in module.lessons
             ]
 
-            # Set code editor content
+            # Set lesson type
+            self.current_lesson_type = lesson.lesson_type
+
+            # Set code editor content (for code lessons)
             self.starter_code = lesson.starter_code
             self.current_code = lesson.starter_code
 
@@ -218,6 +254,29 @@ class AppState(rx.State):
             self.tests_passed_count = 0
             self.tests_total_count = 0
             self.error_message = ""
+
+            # Load questions for quiz lessons
+            self.current_questions = [
+                QuestionInfo(
+                    id=q.id,
+                    type=q.type,
+                    text=q.text,
+                    options=[
+                        QuestionOptionInfo(id=opt.id, text=opt.text)
+                        for opt in q.options
+                    ],
+                    multi_select=q.multi_select,
+                )
+                for q in lesson.questions
+            ]
+
+            # Reset quiz state
+            self.quiz_responses = {}
+            self.quiz_results = {}
+            self.quiz_submitted = False
+            self.quiz_all_correct = False
+            self.quiz_correct_count = 0
+            self.quiz_total_count = 0
         else:
             self.current_lesson_id = ""
             self.current_lesson_title = ""
@@ -239,6 +298,94 @@ class AppState(rx.State):
         self.tests_all_passed = False
         self.tests_passed_count = 0
         self.tests_total_count = 0
+
+    def set_mcq_response(self, question_id: str, option_id: str, multi_select: bool) -> None:
+        """Handle MCQ option selection."""
+        if multi_select:
+            # Toggle selection for checkboxes
+            current = self.quiz_responses.get(question_id, [])
+            if option_id in current:
+                current = [x for x in current if x != option_id]
+            else:
+                current = current + [option_id]
+            self.quiz_responses = {**self.quiz_responses, question_id: current}
+        else:
+            # Replace selection for radio buttons
+            self.quiz_responses = {**self.quiz_responses, question_id: [option_id]}
+
+    def set_mcq_response_single(self, question_id: str, option_id: str) -> None:
+        """Handle single-select MCQ option selection (radio buttons)."""
+        if self.quiz_submitted:
+            return
+        self.quiz_responses = {**self.quiz_responses, question_id: [option_id]}
+
+    def set_mcq_response_multi(self, question_id: str, option_id: str) -> None:
+        """Handle multi-select MCQ option selection (checkboxes)."""
+        if self.quiz_submitted:
+            return
+        current = self.quiz_responses.get(question_id, [])
+        if option_id in current:
+            current = [x for x in current if x != option_id]
+        else:
+            current = current + [option_id]
+        self.quiz_responses = {**self.quiz_responses, question_id: current}
+
+    def set_text_response(self, question_id: str, value: str) -> None:
+        """Handle text input response."""
+        self.quiz_responses = {**self.quiz_responses, question_id: [value]}
+
+    def submit_quiz(self) -> None:
+        """Validate quiz responses and show results."""
+        loader = get_lesson_loader()
+        lesson = loader.get_lesson(self.current_module_id, self.current_lesson_id)
+
+        if not lesson:
+            return
+
+        results = {}
+        correct_count = 0
+
+        for question in lesson.questions:
+            user_answer = self.quiz_responses.get(question.id, [])
+
+            if question.type == "mcq":
+                # Exact match of selected options
+                is_correct = set(user_answer) == set(question.correct)
+            else:  # text
+                # Case-insensitive match against any acceptable answer
+                user_text = user_answer[0].strip().lower() if user_answer else ""
+                is_correct = user_text in [ans.strip().lower() for ans in question.correct]
+
+            if is_correct:
+                correct_count += 1
+
+            results[question.id] = QuestionResultInfo(
+                question_id=question.id,
+                correct=is_correct,
+                user_answer=user_answer,
+                correct_answer=question.correct,
+            )
+
+        self.quiz_results = results
+        self.quiz_submitted = True
+        self.quiz_correct_count = correct_count
+        self.quiz_total_count = len(lesson.questions)
+        self.quiz_all_correct = correct_count == len(lesson.questions)
+
+        # Mark as completed if all correct
+        if self.quiz_all_correct:
+            full_id = f"{self.current_module_id}/{self.current_lesson_id}"
+            if full_id not in self.completed_lessons:
+                self.completed_lessons = self.completed_lessons + [full_id]
+
+    def reset_quiz(self) -> None:
+        """Reset quiz state for retry."""
+        self.quiz_responses = {}
+        self.quiz_results = {}
+        self.quiz_submitted = False
+        self.quiz_all_correct = False
+        self.quiz_correct_count = 0
+        self.quiz_total_count = 0
 
     @rx.event(background=True)
     async def run_code(self) -> None:
@@ -353,3 +500,8 @@ class AppState(rx.State):
     def editor_key(self) -> str:
         """Get a unique key for the code editor to force re-mount on lesson change or reset."""
         return f"{self.current_module_id}-{self.current_lesson_id}-{self.editor_reset_count}"
+
+    @rx.var
+    def lesson_completed(self) -> bool:
+        """Check if the current lesson is completed (code tests passed or quiz all correct)."""
+        return self.tests_all_passed or self.quiz_all_correct

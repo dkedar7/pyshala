@@ -6,7 +6,7 @@ from typing import Optional
 
 import yaml
 
-from ..models.lesson import DataFile, Lesson, TestCase
+from ..models.lesson import DataFile, Lesson, Question, TestCase
 from ..models.module import Module
 
 
@@ -182,6 +182,14 @@ class LessonLoader:
                 except OSError:
                     pass
 
+        # Parse questions for quiz lessons
+        questions = []
+        for q_data in data.get("questions", []):
+            questions.append(Question.from_dict(q_data))
+
+        # Determine lesson type (default to "code" for backward compatibility)
+        lesson_type = data.get("type", "code")
+
         lesson = Lesson(
             id=lesson_id,
             title=data.get("title", lesson_id.replace("_", " ").title()),
@@ -190,8 +198,10 @@ class LessonLoader:
             starter_code=data.get("starter_code", ""),
             order=data.get("order", order),
             module_id=module_id,
+            lesson_type=lesson_type,
             test_cases=test_cases,
             data_files=data_files,
+            questions=questions,
         )
 
         return lesson
