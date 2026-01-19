@@ -105,8 +105,12 @@ class LocalExecutor:
                 for df in data_files:
                     if df.content:
                         file_path = os.path.join(tmpdir, df.name)
-                        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                        with open(file_path, "w") as f:
+                        # Ensure parent directory exists (for nested paths like "data/file.csv")
+                        file_dir = os.path.dirname(file_path)
+                        if file_dir:
+                            os.makedirs(file_dir, exist_ok=True)
+                        # Write as binary since content is loaded as bytes
+                        with open(file_path, "wb") as f:
                             f.write(df.content)
 
             # Run the code

@@ -25,9 +25,9 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy and install Python dependencies
-COPY requirements.txt .
+COPY pyproject.toml .
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir .
 
 # Copy application code
 COPY pyshala/ ./pyshala/
@@ -72,16 +72,17 @@ COPY --from=builder /srv/static /srv/static
 # Copy Caddyfile
 COPY Caddyfile /etc/caddy/Caddyfile
 
-# Create directories for data and lessons
-RUN mkdir -p /data /lessons
+# Create directory for lessons
+RUN mkdir -p /lessons
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1 \
     PORT=8080 \
     API_URL=http://localhost:8080 \
-    JUDGE0_URL=http://judge0:2358 \
     LESSONS_PATH=/lessons \
-    DATABASE_PATH=/data/progress.db
+    MAX_EXECUTION_TIME=10.0 \
+    APP_NAME="Learn Python" \
+    APP_DESCRIPTION="Interactive lessons with hands-on coding exercises and instant feedback"
 
 # Expose port
 EXPOSE 8080

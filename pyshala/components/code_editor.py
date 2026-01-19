@@ -3,12 +3,13 @@
 import reflex as rx
 from reflex_monaco import monaco
 
+from ..state.app_state import AppState
+
 
 def code_editor(
     code: str,
     on_change: rx.EventHandler,
     height: str = "400px",
-    theme: str = "vs-dark",
     editor_key: str = "",
 ) -> rx.Component:
     """Create a code editor component.
@@ -17,7 +18,6 @@ def code_editor(
         code: Current code content.
         on_change: Event handler for code changes.
         height: Editor height.
-        theme: Editor theme (vs-dark, vs-light, hc-black).
         editor_key: Unique key to force re-mount on lesson change.
 
     Returns:
@@ -28,15 +28,15 @@ def code_editor(
             key=editor_key,
             default_value=code,
             default_language="python",
-            theme=theme,
+            theme=rx.cond(AppState.dark_mode, "vs-dark", "vs-light"),
             on_change=on_change,
             height=height,
             width="100%",
         ),
         width="100%",
-        border_radius="0.5rem",
+        border_radius="0.375rem",
         overflow="hidden",
-        box_shadow="0 1px 3px rgba(0, 0, 0, 0.1)",
+        box_shadow="0 1px 2px rgba(0, 0, 0, 0.08)",
     )
 
 
@@ -61,35 +61,35 @@ def editor_toolbar(
                 is_running,
                 rx.hstack(
                     rx.spinner(size="1"),
-                    rx.text("Running..."),
-                    spacing="2",
+                    rx.text("Running...", font_size="0.8rem"),
+                    spacing="1",
                 ),
                 rx.hstack(
-                    rx.icon("play", size=16),
-                    rx.text("Run Code"),
-                    spacing="2",
+                    rx.icon("play", size=14),
+                    rx.text("Run Code", font_size="0.8rem"),
+                    spacing="1",
                 ),
             ),
             on_click=on_run,
             disabled=is_running,
             color_scheme="green",
-            size="2",
+            size="1",
             cursor=rx.cond(is_running, "not-allowed", "pointer"),
         ),
         rx.button(
             rx.hstack(
-                rx.icon("rotate-ccw", size=16),
-                rx.text("Reset"),
-                spacing="2",
+                rx.icon("rotate-ccw", size=14),
+                rx.text("Reset", font_size="0.8rem"),
+                spacing="1",
             ),
             on_click=on_reset,
             disabled=is_running,
             variant="outline",
             color_scheme="gray",
-            size="2",
+            size="1",
         ),
-        spacing="3",
+        spacing="2",
         width="100%",
         justify="start",
-        padding_y="0.75rem",
+        padding_y="0.5rem",
     )

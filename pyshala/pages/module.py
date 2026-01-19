@@ -18,37 +18,50 @@ def lesson_row(lesson: LessonInfo) -> rx.Component:
     return rx.link(
         rx.hstack(
             rx.hstack(
-                rx.icon("circle", size=20, color="#d1d5db"),
+                rx.icon(
+                    "circle",
+                    size=16,
+                    color=rx.cond(AppState.dark_mode, "#4b5563", "#d1d5db"),
+                ),
                 rx.text(
                     f"{lesson.order + 1}.",
-                    color="#9ca3af",
-                    font_size="0.9rem",
-                    min_width="2rem",
+                    color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+                    font_size="0.8rem",
+                    min_width="1.5rem",
                 ),
                 rx.vstack(
                     rx.text(
                         lesson.title,
                         font_weight="500",
-                        color="#1f2937",
+                        font_size="0.85rem",
+                        color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                     ),
                     spacing="0",
                     align="start",
                 ),
-                spacing="3",
+                spacing="2",
                 align="center",
             ),
             rx.spacer(),
             rx.hstack(
                 rx.badge("Start", color_scheme="blue", size="1"),
-                rx.icon("chevron-right", size=16, color="#9ca3af"),
+                rx.icon(
+                    "chevron-right",
+                    size=14,
+                    color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+                ),
                 spacing="2",
                 align="center",
             ),
             width="100%",
-            padding="1rem 1.25rem",
-            background="white",
-            border_radius="0.5rem",
-            border="1px solid #e5e7eb",
+            padding="0.75rem 1rem",
+            background=rx.cond(AppState.dark_mode, "#1e293b", "white"),
+            border_radius="0.375rem",
+            border=rx.cond(
+                AppState.dark_mode,
+                "1px solid #374151",
+                "1px solid #e5e7eb",
+            ),
             _hover={
                 "border_color": "#3b82f6",
                 "box_shadow": "0 2px 8px rgba(59, 130, 246, 0.1)",
@@ -75,8 +88,8 @@ def module_page() -> rx.Component:
                 # Back link
                 rx.link(
                     rx.hstack(
-                        rx.icon("arrow-left", size=16, color="#3b82f6"),
-                        rx.text("Back to Modules", color="#3b82f6"),
+                        rx.icon("arrow-left", size=14, color="#3b82f6"),
+                        rx.text("Back to Modules", color="#3b82f6", font_size="0.85rem"),
                         spacing="1",
                         align="center",
                     ),
@@ -87,32 +100,36 @@ def module_page() -> rx.Component:
                 rx.box(
                     rx.vstack(
                         rx.hstack(
-                            rx.icon("book-open", size=32, color="#3b82f6"),
+                            rx.icon("book-open", size=24, color="#3b82f6"),
                             rx.badge(
                                 f"{AppState.current_module_lesson_count} lessons",
                                 color_scheme="blue",
-                                size="2",
+                                size="1",
                             ),
-                            spacing="3",
+                            spacing="2",
                             align="center",
                         ),
                         rx.heading(
                             AppState.current_module_name,
-                            size="8",
-                            color="#1f2937",
+                            size="6",
+                            color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                         ),
                         rx.text(
                             AppState.current_module_description,
-                            color="#6b7280",
-                            font_size="1.1rem",
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
+                            font_size="0.9rem",
                         ),
-                        spacing="2",
+                        spacing="1",
                         align="start",
                         width="100%",
                     ),
                     width="100%",
-                    padding_bottom="1.5rem",
-                    border_bottom="1px solid #e5e7eb",
+                    padding_bottom="1rem",
+                    border_bottom=rx.cond(
+                        AppState.dark_mode,
+                        "1px solid #374151",
+                        "1px solid #e5e7eb",
+                    ),
                 ),
                 # Lesson list
                 rx.vstack(
@@ -122,18 +139,18 @@ def module_page() -> rx.Component:
                     ),
                     width="100%",
                     spacing="2",
-                    padding_top="1rem",
+                    padding_top="0.75rem",
                 ),
                 width="100%",
                 max_width="800px",
                 margin="0 auto",
-                padding="2rem",
-                spacing="4",
+                padding="1.5rem",
+                spacing="3",
                 align="start",
             ),
             width="100%",
-            min_height="calc(100vh - 60px)",
-            background="#f9fafb",
+            min_height="calc(100vh - 44px)",
+            background=rx.cond(AppState.dark_mode, "#0f172a", "#f9fafb"),
         ),
         width="100%",
     )

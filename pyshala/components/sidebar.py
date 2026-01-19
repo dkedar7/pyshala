@@ -2,7 +2,7 @@
 
 import reflex as rx
 
-from ..state.app_state import LessonInfo
+from ..state.app_state import AppState, LessonInfo
 
 
 def lesson_item(
@@ -30,25 +30,33 @@ def lesson_item(
         rx.hstack(
             rx.cond(
                 is_completed,
-                rx.icon("circle-check", size=16, color="#10b981"),
-                rx.icon("circle", size=16, color="#9ca3af"),
+                rx.icon("circle-check", size=14, color="#10b981"),
+                rx.icon(
+                    "circle",
+                    size=14,
+                    color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+                ),
             ),
             rx.text(
                 lesson.title,
-                font_size="0.9rem",
+                font_size="0.8rem",
                 font_weight=rx.cond(is_current, "600", "400"),
-                color=rx.cond(is_current, "#3b82f6", "#374151"),
+                color=rx.cond(
+                    is_current,
+                    "#3b82f6",
+                    rx.cond(AppState.dark_mode, "#e5e7eb", "#374151"),
+                ),
             ),
             spacing="2",
             width="100%",
-            padding="0.5rem 0.75rem",
+            padding="0.4rem 0.6rem",
             border_radius="0.375rem",
             background=rx.cond(
                 is_current,
-                "rgba(59, 130, 246, 0.1)",
+                rx.cond(AppState.dark_mode, "rgba(59, 130, 246, 0.2)", "rgba(59, 130, 246, 0.1)"),
                 "transparent",
             ),
-            _hover={"background": "rgba(59, 130, 246, 0.05)"},
+            _hover={"background": rx.cond(AppState.dark_mode, "rgba(59, 130, 246, 0.15)", "rgba(59, 130, 246, 0.05)")},
         ),
         href="/lesson/" + module_id + "/" + lesson.id,
         width="100%",
@@ -77,47 +85,130 @@ def sidebar(
     """
     return rx.box(
         rx.vstack(
-            # Module header
-            rx.hstack(
-                rx.link(
-                    rx.icon("arrow-left", size=18, color="#3b82f6"),
-                    href="/module/" + module_id,
-                ),
-                rx.text(
-                    module_name,
-                    font_size="1rem",
-                    font_weight="600",
-                    color="#1f2937",
-                ),
-                spacing="2",
-                align="center",
-                padding_bottom="0.75rem",
-                border_bottom="1px solid #e5e7eb",
-                width="100%",
-            ),
-            # Lesson list
-            rx.vstack(
-                rx.foreach(
-                    lessons,
-                    lambda lesson: lesson_item(
-                        lesson, module_id, current_lesson_id, completed_lessons
+            # Header: different layout for expanded vs collapsed
+            rx.cond(
+                AppState.sidebar_collapsed == False,
+                # Expanded: back arrow, module name, collapse button
+                rx.hstack(
+                    rx.link(
+                        rx.icon("arrow-left", size=16, color="#3b82f6"),
+                        href="/module/" + module_id,
+                    ),
+                    rx.text(
+                        module_name,
+                        font_size="0.8rem",
+                        font_weight="600",
+                        color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
+                        overflow="hidden",
+                        text_overflow="ellipsis",
+                        white_space="nowrap",
+                        flex="1",
+                    ),
+                    rx.icon_button(
+                        rx.icon(
+                            "panel-left-close",
+                            size=14,
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "inherit"),
+                        ),
+                        variant="ghost",
+                        size="1",
+                        on_click=AppState.toggle_sidebar,
+                        cursor="pointer",
+                    ),
+                    spacing="2",
+                    align="center",
+                    width="100%",
+                    padding_bottom="0.5rem",
+                    border_bottom=rx.cond(
+                        AppState.dark_mode,
+                        "1px solid #374151",
+                        "1px solid #e5e7eb",
                     ),
                 ),
-                width="100%",
-                spacing="1",
-                padding_top="0.75rem",
+                # Collapsed: only expand button, centered
+                rx.hstack(
+                    rx.icon_button(
+                        rx.icon(
+                            "panel-left-open",
+                            size=14,
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "inherit"),
+                        ),
+                        variant="ghost",
+                        size="1",
+                        on_click=AppState.toggle_sidebar,
+                        cursor="pointer",
+                    ),
+                    justify="center",
+                    width="100%",
+                    padding_bottom="0.5rem",
+                    border_bottom=rx.cond(
+                        AppState.dark_mode,
+                        "1px solid #374151",
+                        "1px solid #e5e7eb",
+                    ),
+                ),
+            ),
+            # Lesson list
+            rx.cond(
+                AppState.sidebar_collapsed == False,
+                # Expanded: show full lesson items
+                rx.vstack(
+                    rx.foreach(
+                        lessons,
+                        lambda lesson: lesson_item(
+                            lesson, module_id, current_lesson_id, completed_lessons
+                        ),
+                    ),
+                    width="100%",
+                    spacing="1",
+                    padding_top="0.5rem",
+                ),
+                # Collapsed: show only status icons
+                rx.vstack(
+                    rx.foreach(
+                        lessons,
+                        lambda lesson: rx.link(
+                            rx.cond(
+                                completed_lessons.contains(module_id + "/" + lesson.id),
+                                rx.icon("circle-check", size=14, color="#10b981"),
+                                rx.cond(
+                                    lesson.id == current_lesson_id,
+                                    rx.icon("circle-dot", size=14, color="#3b82f6"),
+                                    rx.icon(
+                                        "circle",
+                                        size=14,
+                                        color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+                                    ),
+                                ),
+                            ),
+                            href="/lesson/" + module_id + "/" + lesson.id,
+                            padding="0.4rem",
+                            _hover={"background": rx.cond(AppState.dark_mode, "rgba(59, 130, 246, 0.15)", "rgba(59, 130, 246, 0.05)")},
+                            border_radius="0.375rem",
+                        ),
+                    ),
+                    spacing="1",
+                    align="center",
+                    width="100%",
+                    padding_top="0.5rem",
+                ),
             ),
             width="100%",
             spacing="0",
             align="start",
         ),
-        width="280px",
-        min_width="280px",
-        height="calc(100vh - 60px)",
-        padding="1rem",
-        background="#fafafa",
-        border_right="1px solid #e5e7eb",
+        width=rx.cond(AppState.sidebar_collapsed, "52px", "220px"),
+        min_width=rx.cond(AppState.sidebar_collapsed, "52px", "220px"),
+        height="calc(100vh - 44px)",
+        padding="0.75rem",
+        background=rx.cond(AppState.dark_mode, "#1e293b", "#fafafa"),
+        border_right=rx.cond(
+            AppState.dark_mode,
+            "1px solid #374151",
+            "1px solid #e5e7eb",
+        ),
         overflow_y="auto",
         position="sticky",
-        top="60px",
+        top="44px",
+        transition="width 0.2s ease, min-width 0.2s ease",
     )

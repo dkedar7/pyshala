@@ -1,6 +1,15 @@
 """Navigation bar component."""
 
+import os
+
 import reflex as rx
+
+from ..state.app_state import AppState
+
+
+def get_app_name() -> str:
+    """Get the application name from environment or default."""
+    return os.getenv("APP_NAME", "PyShala")
 
 
 def navbar() -> rx.Component:
@@ -13,10 +22,10 @@ def navbar() -> rx.Component:
         rx.hstack(
             rx.link(
                 rx.hstack(
-                    rx.icon("graduation-cap", size=28, color="white"),
+                    rx.icon("graduation-cap", size=20, color="white"),
                     rx.text(
-                        "PyShala",
-                        font_size="1.5rem",
+                        get_app_name(),
+                        font_size="1rem",
                         font_weight="bold",
                         color="white",
                     ),
@@ -27,25 +36,41 @@ def navbar() -> rx.Component:
                 _hover={"text_decoration": "none"},
             ),
             rx.spacer(),
-            rx.link(
-                rx.hstack(
-                    rx.icon("book-open", size=18, color="white"),
-                    rx.text("Lessons", color="white"),
-                    spacing="1",
-                    align="center",
+            rx.hstack(
+                rx.link(
+                    rx.hstack(
+                        rx.icon("book-open", size=14, color="white"),
+                        rx.text("Lessons", color="white", font_size="0.85rem"),
+                        spacing="1",
+                        align="center",
+                    ),
+                    href="/",
+                    _hover={"opacity": "0.8"},
                 ),
-                href="/",
-                _hover={"opacity": "0.8"},
+                rx.icon_button(
+                    rx.cond(
+                        AppState.dark_mode,
+                        rx.icon("sun", size=14, color="white"),
+                        rx.icon("moon", size=14, color="white"),
+                    ),
+                    variant="ghost",
+                    size="1",
+                    on_click=AppState.toggle_theme,
+                    cursor="pointer",
+                    _hover={"opacity": "0.8"},
+                ),
+                spacing="3",
+                align="center",
             ),
             width="100%",
-            padding_x="2rem",
-            padding_y="1rem",
+            padding_x="1rem",
+            padding_y="0.5rem",
             align="center",
         ),
-        background="#3b82f6",
+        background=rx.cond(AppState.dark_mode, "#1e293b", "#3b82f6"),
         width="100%",
         position="sticky",
         top="0",
         z_index="1000",
-        box_shadow="0 2px 10px rgba(0, 0, 0, 0.1)",
+        box_shadow="0 1px 4px rgba(0, 0, 0, 0.1)",
     )
