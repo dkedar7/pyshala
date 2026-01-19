@@ -1,0 +1,94 @@
+site_name: PyShala
+site_url: https://dkedar7.github.io/pyshala
+site_description: A self-hosted interactive Python training platform
+site_author: Kedar Dabhadkar
+repo_name: dkedar7/pyshala
+repo_url: https://github.com/dkedar7/pyshala
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/logo.svg
+  favicon: assets/favicon.ico
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/dkedar7/pyshala
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/pyshala/
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Configuration: getting-started/configuration.md
+  - Writing Lessons:
+      - Overview: lessons/overview.md
+      - Code Lessons: lessons/code-lessons.md
+      - Quiz Lessons: lessons/quiz-lessons.md
+      - Best Practices: lessons/best-practices.md
+  - API Reference:
+      - CLI: api/cli.md
+      - Python API: api/python.md
+  - Deployment:
+      - Docker: deployment/docker.md
+      - Cloud: deployment/cloud.md
+  - llms.txt: llms.txt
+
+copyright: Copyright &copy; 2026 Kedar Dabhadkar

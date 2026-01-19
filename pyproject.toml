@@ -33,6 +33,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/dkedar7/pyshala"
+Documentation = "https://dkedar7.github.io/pyshala"
 Repository = "https://github.com/dkedar7/pyshala"
 Issues = "https://github.com/dkedar7/pyshala/issues"
 
@@ -44,6 +45,11 @@ dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=4.0.0",
+]
+docs = [
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+    "pymdown-extensions>=10.0.0",
 ]
 
 [build-system]
