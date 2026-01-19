@@ -6,7 +6,6 @@ import reflex as rx
 
 from .pages.index import index
 from .pages.lesson import lesson_page
-from .pages.module import module_page
 from .state.app_state import AppState
 
 
@@ -34,12 +33,6 @@ app = rx.App(
 # Add routes
 # Using on_load instead of on_mount ensures data reloads on every navigation
 app.add_page(index, route="/", title=f"{APP_NAME} - Learn Python")
-app.add_page(
-    module_page,
-    route="/module/[module_id]",
-    title=f"Module - {APP_NAME}",
-    on_load=[AppState.load_module_from_route, AppState.load_progress],
-)
 app.add_page(
     lesson_page,
     route="/lesson/[module_id]/[lesson_id]",

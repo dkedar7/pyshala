@@ -92,7 +92,7 @@ def sidebar(
                 rx.hstack(
                     rx.link(
                         rx.icon("arrow-left", size=16, color="#3b82f6"),
-                        href="/module/" + module_id,
+                        href="/",
                     ),
                     rx.text(
                         module_name,

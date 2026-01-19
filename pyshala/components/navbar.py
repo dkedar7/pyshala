@@ -1,15 +1,8 @@
 """Navigation bar component."""
 
-import os
-
 import reflex as rx
 
 from ..state.app_state import AppState
-
-
-def get_app_name() -> str:
-    """Get the application name from environment or default."""
-    return os.getenv("APP_NAME", "PyShala")
 
 
 def navbar() -> rx.Component:
@@ -22,9 +15,9 @@ def navbar() -> rx.Component:
         rx.hstack(
             rx.link(
                 rx.hstack(
-                    rx.icon("graduation-cap", size=20, color="white"),
+                    rx.icon(AppState.app_icon, size=20, color="white"),
                     rx.text(
-                        get_app_name(),
+                        AppState.app_title,
                         font_size="1rem",
                         font_weight="bold",
                         color="white",
@@ -38,13 +31,9 @@ def navbar() -> rx.Component:
             rx.spacer(),
             rx.hstack(
                 rx.link(
-                    rx.hstack(
-                        rx.icon("book-open", size=14, color="white"),
-                        rx.text("Lessons", color="white", font_size="0.85rem"),
-                        spacing="1",
-                        align="center",
-                    ),
-                    href="/",
+                    rx.text(AppState.app_about_text, color="white", font_size="0.85rem"),
+                    href=AppState.app_about_url,
+                    is_external=True,
                     _hover={"opacity": "0.8"},
                 ),
                 rx.icon_button(

@@ -1,19 +1,9 @@
 """Home page - displays all available modules."""
 
-import os
-
 import reflex as rx
 
 from ..components.navbar import navbar
 from ..state.app_state import AppState, ModuleInfo
-
-
-def get_app_description() -> str:
-    """Get the application description from environment or default."""
-    return os.getenv(
-        "APP_DESCRIPTION",
-        "Interactive lessons with hands-on coding exercises and instant feedback"
-    )
 
 
 def module_card(module: ModuleInfo) -> rx.Component:
@@ -70,7 +60,7 @@ def module_card(module: ModuleInfo) -> rx.Component:
             height="100%",
             min_height="150px",
         ),
-        href=f"/module/{module.id}",
+        href=f"/lesson/{module.id}/{module.first_lesson_id}",
         _hover={"text_decoration": "none"},
         width="100%",
     )
@@ -125,13 +115,13 @@ def index() -> rx.Component:
                 rx.box(
                     rx.vstack(
                         rx.heading(
-                            "Learn Python, One Lesson at a Time",
+                            AppState.app_subtitle,
                             size="6",
                             color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                             text_align="center",
                         ),
                         rx.text(
-                            get_app_description(),
+                            AppState.app_description,
                             color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                             font_size="0.9rem",
                             text_align="center",
@@ -170,6 +160,6 @@ def index() -> rx.Component:
             min_height="calc(100vh - 44px)",
             background=rx.cond(AppState.dark_mode, "#0f172a", "#f9fafb"),
         ),
-        on_mount=[AppState.load_modules, AppState.load_progress],
+        on_mount=[AppState.load_config, AppState.load_modules, AppState.load_progress],
         width="100%",
     )

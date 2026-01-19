@@ -5,6 +5,8 @@ import reflex as rx
 from ..components.code_editor import code_editor, editor_toolbar
 from ..components.lesson_content import lesson_content, lesson_header
 from ..components.navbar import navbar
+from ..components.quiz_form import quiz_form, quiz_results_summary
+from ..components.quiz_toolbar import quiz_toolbar
 from ..components.sidebar import sidebar
 from ..components.test_results import test_results
 from ..state.app_state import AppState
@@ -36,7 +38,7 @@ def lesson_navigation() -> rx.Component:
         ),
         rx.spacer(),
         rx.cond(
-            AppState.tests_all_passed & AppState.has_next_lesson,
+            AppState.lesson_completed & AppState.has_next_lesson,
             rx.link(
                 rx.button(
                     rx.hstack(
@@ -110,35 +112,45 @@ def lesson_page() -> rx.Component:
                         height="calc(100vh - 44px)",
                         background=rx.cond(AppState.dark_mode, "#0f172a", "white"),
                     ),
-                    # Right column - Code editor and results
+                    # Right column - Code editor/Quiz and results
                     rx.box(
-                        rx.vstack(
-                            # Editor toolbar
-                            editor_toolbar(
-                                on_run=AppState.run_code,
-                                on_reset=AppState.reset_code,
-                                is_running=AppState.is_running,
+                        rx.cond(
+                            AppState.current_lesson_type == "quiz",
+                            # Quiz content
+                            rx.vstack(
+                                quiz_toolbar(),
+                                quiz_form(),
+                                quiz_results_summary(),
+                                lesson_navigation(),
+                                width="100%",
+                                spacing="2",
+                                align="start",
                             ),
-                            # Code editor
-                            code_editor(
-                                code=AppState.current_code,
-                                on_change=AppState.set_code,
-                                height="280px",
-                                editor_key=AppState.editor_key,
+                            # Code content
+                            rx.vstack(
+                                editor_toolbar(
+                                    on_run=AppState.run_code,
+                                    on_reset=AppState.reset_code,
+                                    is_running=AppState.is_running,
+                                ),
+                                code_editor(
+                                    code=AppState.current_code,
+                                    on_change=AppState.set_code,
+                                    height="280px",
+                                    editor_key=AppState.editor_key,
+                                ),
+                                test_results(
+                                    results=AppState.test_results,
+                                    is_running=AppState.is_running,
+                                    all_passed=AppState.tests_all_passed,
+                                    passed_count=AppState.tests_passed_count,
+                                    total_count=AppState.tests_total_count,
+                                ),
+                                lesson_navigation(),
+                                width="100%",
+                                spacing="2",
+                                align="start",
                             ),
-                            # Test results
-                            test_results(
-                                results=AppState.test_results,
-                                is_running=AppState.is_running,
-                                all_passed=AppState.tests_all_passed,
-                                passed_count=AppState.tests_passed_count,
-                                total_count=AppState.tests_total_count,
-                            ),
-                            # Navigation
-                            lesson_navigation(),
-                            width="100%",
-                            spacing="2",
-                            align="start",
                         ),
                         width="50%",
                         padding="0.75rem",
