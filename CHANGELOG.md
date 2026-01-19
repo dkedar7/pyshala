@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-01-18
+
+### Added
+- **Quiz Lessons**: New lesson type supporting multiple choice questions (MCQ) and text-based questions
+  - Single-select MCQ with radio buttons
+  - Multi-select MCQ with checkboxes
+  - Text input questions with case-insensitive matching
+  - Automatic grading with instant feedback
+- **App Configuration**: New `config.yaml` file for customizing:
+  - App title and subtitle
+  - Home page description
+  - About link URL and text
+  - Navbar icon (Lucide icons)
+- **Enhanced Documentation**: Comprehensive guide for building effective modules, quiz best practices, and LLM prompt templates
+
+### Changed
+- Simplified navigation by removing intermediate module page - users now go directly from home to lessons
+- Renamed "Run Code" button to "Submit" for consistency across code and quiz lessons
+
+### Fixed
+- Fixed rxconfig.py location for proper package structure
+- Added .gitignore to exclude build artifacts
+
 ## [0.1.0] - 2025-01-18
 
 ### Added
