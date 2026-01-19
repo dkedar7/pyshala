@@ -17,6 +17,7 @@ Lessons are organized into **modules** (folders) containing **lessons** (YAML fi
 
 ```
 lessons/
+├── config.yaml                   # App configuration (optional)
 ├── module_id/                    # Module folder (use snake_case)
 │   ├── module.yaml               # Module metadata (optional)
 │   ├── 01_lesson_id.yaml         # Lesson file
@@ -26,6 +27,46 @@ lessons/
     ├── module.yaml
     └── 01_intro.yaml
 ```
+
+## App Configuration
+
+Customize the app's title, subtitle, and navigation by creating a `config.yaml` file in your lessons directory:
+
+```yaml
+# App identity
+title: "PyShala"
+subtitle: "Learn Python, One Lesson at a Time"
+description: "Interactive lessons with hands-on coding exercises and instant feedback"
+
+# Navigation
+about_url: "https://github.com/dkedar7/pyshala"
+about_text: "About"
+
+# Branding (icon name from Lucide icons)
+icon: "graduation-cap"
+```
+
+### Config Fields
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `title` | "PyShala" | App name displayed in the navbar |
+| `subtitle` | "Learn Python, One Lesson at a Time" | Heading shown on the home page |
+| `description` | "Interactive lessons with hands-on coding exercises and instant feedback" | Subtext under the subtitle |
+| `about_url` | "https://github.com/dkedar7/pyshala" | URL for the About link |
+| `about_text` | "About" | Text for the About link |
+| `icon` | "graduation-cap" | Lucide icon name for the navbar (see [Lucide Icons](https://lucide.dev/icons)) |
+
+### Config File Location
+
+PyShala searches for `config.yaml` in the following order:
+
+1. Path specified in `PYSHALA_CONFIG` environment variable
+2. `config.yaml` in the lessons directory (`LESSONS_PATH`)
+3. `config.yaml` in the current working directory
+4. `lessons/config.yaml` relative to the current directory
+
+If no config file is found, default values are used.
 
 ## Module Configuration
 

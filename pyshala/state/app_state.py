@@ -5,6 +5,7 @@ from __future__ import annotations
 import reflex as rx
 from pydantic import BaseModel
 
+from ..services.config_loader import get_app_config
 from ..services.local_executor import get_local_executor
 from ..services.lesson_loader import get_lesson_loader
 
@@ -123,6 +124,24 @@ class AppState(rx.State):
     quiz_all_correct: bool = False
     quiz_correct_count: int = 0
     quiz_total_count: int = 0
+
+    # App config (loaded from config.yaml)
+    app_title: str = "PyShala"
+    app_subtitle: str = "Learn Python, One Lesson at a Time"
+    app_description: str = "Interactive lessons with hands-on coding exercises and instant feedback"
+    app_about_url: str = "https://github.com/dkedar7/pyshala"
+    app_about_text: str = "About"
+    app_icon: str = "graduation-cap"
+
+    def load_config(self) -> None:
+        """Load app configuration from config.yaml."""
+        config = get_app_config()
+        self.app_title = config.title
+        self.app_subtitle = config.subtitle
+        self.app_description = config.description
+        self.app_about_url = config.about_url
+        self.app_about_text = config.about_text
+        self.app_icon = config.icon
 
     def toggle_theme(self) -> None:
         """Toggle between light and dark theme."""
