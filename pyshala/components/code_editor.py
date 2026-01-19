@@ -87,6 +87,8 @@ def editor_toolbar(
             variant="outline",
             color_scheme="gray",
             size="1",
+            color=rx.cond(AppState.dark_mode, "#d1d5db", "#374151"),
+            border_color=rx.cond(AppState.dark_mode, "#4b5563", "#9ca3af"),
         ),
         spacing="2",
         width="100%",

@@ -38,13 +38,9 @@ def navbar() -> rx.Component:
             rx.spacer(),
             rx.hstack(
                 rx.link(
-                    rx.hstack(
-                        rx.icon("book-open", size=14, color="white"),
-                        rx.text("Lessons", color="white", font_size="0.85rem"),
-                        spacing="1",
-                        align="center",
-                    ),
-                    href="/",
+                    rx.text("About", color="white", font_size="0.85rem"),
+                    href="https://github.com/dkedar7/pyshala",
+                    is_external=True,
                     _hover={"opacity": "0.8"},
                 ),
                 rx.icon_button(

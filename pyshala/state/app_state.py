@@ -1,6 +1,6 @@
 """Application state management."""
 
-from typing import Any, Optional
+from __future__ import annotations
 
 import reflex as rx
 from pydantic import BaseModel
@@ -16,6 +16,7 @@ class ModuleInfo(BaseModel):
     description: str = ""
     order: int = 0
     lesson_count: int = 0
+    first_lesson_id: str = ""
 
 
 class LessonInfo(BaseModel):
@@ -106,6 +107,7 @@ class AppState(rx.State):
                 description=m.description,
                 order=m.order,
                 lesson_count=len(m.lessons),
+                first_lesson_id=m.lessons[0].id if m.lessons else "",
             )
             for m in modules
         ]
@@ -115,14 +117,6 @@ class AppState(rx.State):
         # Progress resets on browser refresh - each session starts fresh
         # This avoids conflicts between multiple users on shared deployments
         pass
-
-    def load_module_from_route(self) -> None:
-        """Load module based on URL parameter."""
-        # Using router.page.params despite deprecation warning
-        # router.url doesn't support dynamic route params yet (Reflex issue #5689)
-        module_id = self.router.page.params.get("module_id", "")
-        if module_id:
-            self._load_module(module_id)
 
     def _load_module(self, module_id: str) -> None:
         """Load a specific module by ID."""

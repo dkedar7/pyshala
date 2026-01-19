@@ -70,7 +70,7 @@ def module_card(module: ModuleInfo) -> rx.Component:
             height="100%",
             min_height="150px",
         ),
-        href=f"/module/{module.id}",
+        href=f"/lesson/{module.id}/{module.first_lesson_id}",
         _hover={"text_decoration": "none"},
         width="100%",
     )
