@@ -22,13 +22,13 @@ def lesson_navigation() -> rx.Component:
             rx.link(
                 rx.button(
                     rx.hstack(
-                        rx.icon("arrow-left", size=16),
-                        rx.text("Previous"),
+                        rx.icon("arrow-left", size=14),
+                        rx.text("Previous", font_size="0.8rem"),
                         spacing="1",
                     ),
                     variant="outline",
                     color_scheme="gray",
-                    size="2",
+                    size="1",
                 ),
                 href=AppState.previous_lesson_url,
             ),
@@ -40,12 +40,12 @@ def lesson_navigation() -> rx.Component:
             rx.link(
                 rx.button(
                     rx.hstack(
-                        rx.text("Next Lesson"),
-                        rx.icon("arrow-right", size=16),
+                        rx.text("Next Lesson", font_size="0.8rem"),
+                        rx.icon("arrow-right", size=14),
                         spacing="1",
                     ),
                     color_scheme="green",
-                    size="2",
+                    size="1",
                 ),
                 href=AppState.next_lesson_url,
             ),
@@ -53,20 +53,20 @@ def lesson_navigation() -> rx.Component:
                 AppState.has_next_lesson,
                 rx.button(
                     rx.hstack(
-                        rx.text("Next Lesson"),
-                        rx.icon("arrow-right", size=16),
+                        rx.text("Next Lesson", font_size="0.8rem"),
+                        rx.icon("arrow-right", size=14),
                         spacing="1",
                     ),
                     variant="outline",
                     color_scheme="gray",
-                    size="2",
+                    size="1",
                     disabled=True,
                 ),
                 rx.box(),
             ),
         ),
         width="100%",
-        padding_y="1rem",
+        padding_y="0.5rem",
     )
 
 
@@ -101,13 +101,13 @@ def lesson_page() -> rx.Component:
                             ),
                             lesson_content(AppState.current_lesson_instructions),
                             width="100%",
-                            spacing="3",
+                            spacing="2",
                             align="start",
                         ),
                         width="50%",
-                        padding="1.5rem",
+                        padding="0.75rem",
                         overflow_y="auto",
-                        height="calc(100vh - 60px)",
+                        height="calc(100vh - 44px)",
                         background="white",
                     ),
                     # Right column - Code editor and results
@@ -123,7 +123,7 @@ def lesson_page() -> rx.Component:
                             code_editor(
                                 code=AppState.current_code,
                                 on_change=AppState.set_code,
-                                height="350px",
+                                height="280px",
                                 editor_key=AppState.editor_key,
                             ),
                             # Test results
@@ -137,13 +137,13 @@ def lesson_page() -> rx.Component:
                             # Navigation
                             lesson_navigation(),
                             width="100%",
-                            spacing="3",
+                            spacing="2",
                             align="start",
                         ),
                         width="50%",
-                        padding="1.5rem",
+                        padding="0.75rem",
                         overflow_y="auto",
-                        height="calc(100vh - 60px)",
+                        height="calc(100vh - 44px)",
                         background="#f9fafb",
                     ),
                     width="100%",

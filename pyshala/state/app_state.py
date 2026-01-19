@@ -86,6 +86,9 @@ class AppState(rx.State):
     # Error handling
     error_message: str = ""
 
+    # UI state
+    sidebar_collapsed: bool = False
+
     def load_modules(self) -> None:
         """Load all modules from the lesson loader."""
         loader = get_lesson_loader()
@@ -224,6 +227,10 @@ class AppState(rx.State):
     def set_code(self, code: str) -> None:
         """Update the current code in the editor."""
         self.current_code = code
+
+    def toggle_sidebar(self) -> None:
+        """Toggle sidebar visibility."""
+        self.sidebar_collapsed = not self.sidebar_collapsed
 
     def reset_code(self) -> None:
         """Reset code to starter code."""

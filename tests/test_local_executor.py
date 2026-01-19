@@ -2,6 +2,7 @@
 
 import pytest
 
+from pyshala.models.lesson import DataFile
 from pyshala.services.local_executor import (
     ExecutionResult,
     LocalExecutor,
@@ -129,3 +130,30 @@ class TestRunTests:
         results = await executor.run_tests(code, test_cases)
         assert not results.all_passed
         assert "oops" in results.test_results[0].error_message
+
+    async def test_with_data_file(self, executor):
+        """Test execution with a data file (e.g., CSV)."""
+        code = """
+with open('data.csv') as f:
+    lines = f.readlines()
+    print(len(lines))
+"""
+        csv_content = b"name,value\nAlice,10\nBob,20\nCharlie,30\n"
+        data_files = [DataFile(name="data.csv", path="data.csv", content=csv_content)]
+        test_cases = [
+            {"stdin": "", "expected_output": "4", "description": "Counts CSV lines"},
+        ]
+        results = await executor.run_tests(code, test_cases, data_files=data_files)
+        assert results.all_passed
+
+    async def test_with_data_file_binary_content(self, executor):
+        """Test that binary file content is written correctly."""
+        code = """
+with open('test.txt', 'rb') as f:
+    content = f.read()
+    print(content.decode('utf-8').strip())
+"""
+        data_files = [DataFile(name="test.txt", path="test.txt", content=b"hello world")]
+        result = await executor.execute(code, data_files=data_files)
+        assert result.is_success
+        assert result.stdout.strip() == "hello world"

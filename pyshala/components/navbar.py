@@ -20,10 +20,10 @@ def navbar() -> rx.Component:
         rx.hstack(
             rx.link(
                 rx.hstack(
-                    rx.icon("graduation-cap", size=28, color="white"),
+                    rx.icon("graduation-cap", size=20, color="white"),
                     rx.text(
                         get_app_name(),
-                        font_size="1.5rem",
+                        font_size="1rem",
                         font_weight="bold",
                         color="white",
                     ),
@@ -36,8 +36,8 @@ def navbar() -> rx.Component:
             rx.spacer(),
             rx.link(
                 rx.hstack(
-                    rx.icon("book-open", size=18, color="white"),
-                    rx.text("Lessons", color="white"),
+                    rx.icon("book-open", size=14, color="white"),
+                    rx.text("Lessons", color="white", font_size="0.85rem"),
                     spacing="1",
                     align="center",
                 ),
@@ -45,8 +45,8 @@ def navbar() -> rx.Component:
                 _hover={"opacity": "0.8"},
             ),
             width="100%",
-            padding_x="2rem",
-            padding_y="1rem",
+            padding_x="1rem",
+            padding_y="0.5rem",
             align="center",
         ),
         background="#3b82f6",
@@ -54,5 +54,5 @@ def navbar() -> rx.Component:
         position="sticky",
         top="0",
         z_index="1000",
-        box_shadow="0 2px 10px rgba(0, 0, 0, 0.1)",
+        box_shadow="0 1px 4px rgba(0, 0, 0, 0.1)",
     )
