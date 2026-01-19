@@ -108,7 +108,7 @@ def lesson_page() -> rx.Component:
                         padding="0.75rem",
                         overflow_y="auto",
                         height="calc(100vh - 44px)",
-                        background="white",
+                        background=rx.cond(AppState.dark_mode, "#0f172a", "white"),
                     ),
                     # Right column - Code editor and results
                     rx.box(
@@ -144,7 +144,7 @@ def lesson_page() -> rx.Component:
                         padding="0.75rem",
                         overflow_y="auto",
                         height="calc(100vh - 44px)",
-                        background="#f9fafb",
+                        background=rx.cond(AppState.dark_mode, "#1e293b", "#f9fafb"),
                     ),
                     width="100%",
                     spacing="0",

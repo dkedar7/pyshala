@@ -2,7 +2,7 @@
 
 import reflex as rx
 
-from ..state.app_state import TestResultInfo
+from ..state.app_state import AppState, TestResultInfo
 
 
 def test_result_item(result: TestResultInfo) -> rx.Component:
@@ -27,7 +27,11 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                     result.description,
                     font_weight="500",
                     font_size="0.8rem",
-                    color=rx.cond(result.passed, "#065f46", "#991b1b"),
+                    color=rx.cond(
+                        result.passed,
+                        rx.cond(AppState.dark_mode, "#34d399", "#065f46"),
+                        rx.cond(AppState.dark_mode, "#fca5a5", "#991b1b"),
+                    ),
                 ),
                 rx.spacer(),
                 rx.badge(
@@ -49,7 +53,7 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                             rx.text(
                                 "Expected:",
                                 font_size="0.7rem",
-                                color="#6b7280",
+                                color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                                 margin_bottom="0.125rem",
                             ),
                             rx.code(
@@ -57,9 +61,10 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                                 display="block",
                                 white_space="pre-wrap",
                                 padding="0.375rem",
-                                background="#f0fdf4",
+                                background=rx.cond(AppState.dark_mode, "#064e3b", "#f0fdf4"),
                                 border_radius="0.25rem",
                                 font_size="0.7rem",
+                                color=rx.cond(AppState.dark_mode, "#a7f3d0", "inherit"),
                                 width="100%",
                             ),
                             width="100%",
@@ -73,7 +78,7 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                             rx.text(
                                 "Your output:",
                                 font_size="0.7rem",
-                                color="#6b7280",
+                                color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                                 margin_bottom="0.125rem",
                             ),
                             rx.code(
@@ -81,9 +86,10 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                                 display="block",
                                 white_space="pre-wrap",
                                 padding="0.375rem",
-                                background="#fef2f2",
+                                background=rx.cond(AppState.dark_mode, "#7f1d1d", "#fef2f2"),
                                 border_radius="0.25rem",
                                 font_size="0.7rem",
+                                color=rx.cond(AppState.dark_mode, "#fecaca", "inherit"),
                                 width="100%",
                             ),
                             width="100%",
@@ -97,7 +103,7 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                             rx.text(
                                 "Error:",
                                 font_size="0.7rem",
-                                color="#6b7280",
+                                color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                                 margin_bottom="0.125rem",
                             ),
                             rx.code(
@@ -105,10 +111,10 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
                                 display="block",
                                 white_space="pre-wrap",
                                 padding="0.375rem",
-                                background="#fef2f2",
+                                background=rx.cond(AppState.dark_mode, "#7f1d1d", "#fef2f2"),
                                 border_radius="0.25rem",
                                 font_size="0.7rem",
-                                color="#991b1b",
+                                color=rx.cond(AppState.dark_mode, "#fca5a5", "#991b1b"),
                                 width="100%",
                             ),
                             width="100%",
@@ -125,12 +131,16 @@ def test_result_item(result: TestResultInfo) -> rx.Component:
             spacing="1",
         ),
         padding="0.5rem",
-        background=rx.cond(result.passed, "#f0fdf4", "#fef2f2"),
+        background=rx.cond(
+            result.passed,
+            rx.cond(AppState.dark_mode, "#064e3b", "#f0fdf4"),
+            rx.cond(AppState.dark_mode, "#7f1d1d", "#fef2f2"),
+        ),
         border_radius="0.25rem",
         border=rx.cond(
             result.passed,
-            "1px solid #bbf7d0",
-            "1px solid #fecaca",
+            rx.cond(AppState.dark_mode, "1px solid #065f46", "1px solid #bbf7d0"),
+            rx.cond(AppState.dark_mode, "1px solid #991b1b", "1px solid #fecaca"),
         ),
         width="100%",
     )
@@ -163,14 +173,18 @@ def test_results(
                     "Test Results",
                     font_weight="600",
                     font_size="0.85rem",
-                    color="#1f2937",
+                    color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                 ),
                 rx.spacer(),
                 rx.cond(
                     is_running,
                     rx.hstack(
                         rx.spinner(size="1"),
-                        rx.text("Running...", color="#6b7280", font_size="0.75rem"),
+                        rx.text(
+                            "Running...",
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
+                            font_size="0.75rem",
+                        ),
                         spacing="1",
                     ),
                     rx.cond(
@@ -192,7 +206,11 @@ def test_results(
                 rx.center(
                     rx.vstack(
                         rx.spinner(size="2"),
-                        rx.text("Executing...", color="#6b7280", font_size="0.75rem"),
+                        rx.text(
+                            "Executing...",
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
+                            font_size="0.75rem",
+                        ),
                         spacing="1",
                     ),
                     padding="1rem",
@@ -210,10 +228,14 @@ def test_results(
                     ),
                     rx.center(
                         rx.vstack(
-                            rx.icon("circle-play", size=24, color="#9ca3af"),
+                            rx.icon(
+                                "circle-play",
+                                size=24,
+                                color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+                            ),
                             rx.text(
                                 "Click 'Run Code' to test your solution",
-                                color="#6b7280",
+                                color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                                 font_size="0.75rem",
                             ),
                             spacing="1",
@@ -234,15 +256,19 @@ def test_results(
                             "All tests passed!",
                             font_weight="500",
                             font_size="0.8rem",
-                            color="#065f46",
+                            color=rx.cond(AppState.dark_mode, "#34d399", "#065f46"),
                         ),
                         spacing="1",
                         align="center",
                     ),
                     padding="0.5rem",
-                    background="#d1fae5",
+                    background=rx.cond(AppState.dark_mode, "#064e3b", "#d1fae5"),
                     border_radius="0.25rem",
-                    border="1px solid #a7f3d0",
+                    border=rx.cond(
+                        AppState.dark_mode,
+                        "1px solid #065f46",
+                        "1px solid #a7f3d0",
+                    ),
                     width="100%",
                     margin_top="0.25rem",
                 ),
@@ -253,7 +279,7 @@ def test_results(
         ),
         width="100%",
         padding="0.75rem",
-        background="white",
+        background=rx.cond(AppState.dark_mode, "#1e293b", "white"),
         border_radius="0.375rem",
         box_shadow="0 1px 2px rgba(0, 0, 0, 0.05)",
     )

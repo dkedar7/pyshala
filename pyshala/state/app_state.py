@@ -88,6 +88,11 @@ class AppState(rx.State):
 
     # UI state
     sidebar_collapsed: bool = False
+    dark_mode: bool = False
+
+    def toggle_theme(self) -> None:
+        """Toggle between light and dark theme."""
+        self.dark_mode = not self.dark_mode
 
     def load_modules(self) -> None:
         """Load all modules from the lesson loader."""

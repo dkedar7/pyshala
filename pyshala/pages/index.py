@@ -41,12 +41,12 @@ def module_card(module: ModuleInfo) -> rx.Component:
                 rx.heading(
                     module.name,
                     size="4",
-                    color="#1f2937",
+                    color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                     margin_top="0.375rem",
                 ),
                 rx.text(
                     module.description,
-                    color="#6b7280",
+                    color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                     font_size="0.8rem",
                     line_height="1.5",
                     min_height="2.5rem",
@@ -58,8 +58,9 @@ def module_card(module: ModuleInfo) -> rx.Component:
                 align="start",
             ),
             padding="1rem",
-            background="white",
+            background=rx.cond(AppState.dark_mode, "#1e293b", "white"),
             border_radius="0.5rem",
+            border=rx.cond(AppState.dark_mode, "1px solid #374151", "none"),
             box_shadow="0 1px 2px rgba(0, 0, 0, 0.08)",
             _hover={
                 "box_shadow": "0 4px 12px rgba(0, 0, 0, 0.15)",
@@ -79,21 +80,25 @@ def empty_state() -> rx.Component:
     """Display when no modules are available."""
     return rx.center(
         rx.vstack(
-            rx.icon("folder-open", size=48, color="#9ca3af"),
+            rx.icon(
+                "folder-open",
+                size=48,
+                color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
+            ),
             rx.heading(
                 "No Lessons Yet",
                 size="5",
-                color="#374151",
+                color=rx.cond(AppState.dark_mode, "#e5e7eb", "#374151"),
             ),
             rx.text(
                 "Lessons will appear here once they're configured.",
-                color="#6b7280",
+                color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                 font_size="0.85rem",
                 text_align="center",
             ),
             rx.text(
                 "Add lesson YAML files to the lessons directory to get started.",
-                color="#9ca3af",
+                color=rx.cond(AppState.dark_mode, "#6b7280", "#9ca3af"),
                 font_size="0.8rem",
                 text_align="center",
             ),
@@ -122,12 +127,12 @@ def index() -> rx.Component:
                         rx.heading(
                             "Learn Python, One Lesson at a Time",
                             size="6",
-                            color="#1f2937",
+                            color=rx.cond(AppState.dark_mode, "#f3f4f6", "#1f2937"),
                             text_align="center",
                         ),
                         rx.text(
                             get_app_description(),
-                            color="#6b7280",
+                            color=rx.cond(AppState.dark_mode, "#9ca3af", "#6b7280"),
                             font_size="0.9rem",
                             text_align="center",
                             max_width="600px",
@@ -163,7 +168,7 @@ def index() -> rx.Component:
             ),
             width="100%",
             min_height="calc(100vh - 44px)",
-            background="#f9fafb",
+            background=rx.cond(AppState.dark_mode, "#0f172a", "#f9fafb"),
         ),
         on_mount=[AppState.load_modules, AppState.load_progress],
         width="100%",

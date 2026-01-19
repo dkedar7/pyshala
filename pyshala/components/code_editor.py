@@ -3,12 +3,13 @@
 import reflex as rx
 from reflex_monaco import monaco
 
+from ..state.app_state import AppState
+
 
 def code_editor(
     code: str,
     on_change: rx.EventHandler,
     height: str = "400px",
-    theme: str = "vs-dark",
     editor_key: str = "",
 ) -> rx.Component:
     """Create a code editor component.
@@ -17,7 +18,6 @@ def code_editor(
         code: Current code content.
         on_change: Event handler for code changes.
         height: Editor height.
-        theme: Editor theme (vs-dark, vs-light, hc-black).
         editor_key: Unique key to force re-mount on lesson change.
 
     Returns:
@@ -28,7 +28,7 @@ def code_editor(
             key=editor_key,
             default_value=code,
             default_language="python",
-            theme=theme,
+            theme=rx.cond(AppState.dark_mode, "vs-dark", "vs-light"),
             on_change=on_change,
             height=height,
             width="100%",
