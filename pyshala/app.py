@@ -102,10 +102,10 @@ class PyShala:
         print(f"  Backend: http://{self.host}:{self.backend_port}")
         print()
 
-        # Run from the pyshala package directory
+        # Run from within the pyshala package directory where rxconfig.py is located
         subprocess.run(
             cmd,
-            cwd=pyshala_dir.parent,
+            cwd=pyshala_dir,
             env=env_vars,
         )
 
@@ -127,7 +127,7 @@ class PyShala:
 
         subprocess.run(
             cmd,
-            cwd=pyshala_dir.parent,
+            cwd=pyshala_dir,
             env=env_vars,
         )
 
