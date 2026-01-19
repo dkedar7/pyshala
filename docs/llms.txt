@@ -1,0 +1,187 @@
+# PyShala
+
+> A self-hosted interactive Python training platform with live code execution, automated testing, and quiz lessons.
+
+PyShala is a web application for creating and delivering Python programming courses. It provides an interactive learning environment where students can write code, run it against test cases, and take quizzes.
+
+## Installation
+
+```bash
+pip install pyshala
+```
+
+## Quick Start
+
+```bash
+# Run with built-in sample lessons
+pyshala
+
+# Run with custom lessons
+pyshala --lessons /path/to/lessons
+```
+
+## Core Features
+
+- Live Python code execution in the browser
+- Monaco code editor with syntax highlighting
+- Automated test case validation
+- Quiz lessons with MCQ and text questions
+- YAML-based lesson configuration
+- Dark/light theme support
+- Session-based progress tracking
+
+## Lesson Types
+
+### Code Lessons
+
+Interactive coding exercises with test cases:
+
+```yaml
+title: "Hello World"
+instructions: |
+  Write a program that prints "Hello, World!"
+starter_code: |
+  # Your code here
+test_cases:
+  - description: "Prints greeting"
+    expected_output: "Hello, World!"
+```
+
+### Quiz Lessons
+
+Knowledge assessments with MCQ and text questions:
+
+```yaml
+title: "Python Quiz"
+type: "quiz"
+questions:
+  - id: "q1"
+    type: "mcq"
+    text: "What function prints output?"
+    options:
+      - id: "a"
+        text: "print()"
+      - id: "b"
+        text: "echo()"
+    correct: ["a"]
+  - id: "q2"
+    type: "text"
+    text: "What is 2 + 2?"
+    correct: ["4"]
+```
+
+## Directory Structure
+
+```
+lessons/
+├── config.yaml           # App configuration
+├── module_name/          # Module folder
+│   ├── module.yaml       # Module metadata
+│   ├── 01_lesson.yaml    # Code lesson
+│   └── 02_quiz.yaml      # Quiz lesson
+```
+
+## App Configuration
+
+```yaml
+# config.yaml
+title: "My Python Course"
+subtitle: "Learn Python Today"
+description: "Interactive Python lessons"
+about_url: "https://example.com"
+about_text: "About"
+icon: "book-open"
+```
+
+## Module Configuration
+
+```yaml
+# module.yaml
+name: "Python Basics"
+description: "Learn Python fundamentals"
+order: 1
+lessons:
+  - 01_hello.yaml
+  - 02_variables.yaml
+  - 03_quiz.yaml
+```
+
+## Test Case Format
+
+```yaml
+test_cases:
+  - description: "Test description"
+    stdin: "input"           # Optional input
+    expected_output: "output"
+    hidden: false            # Optional, hide from student
+```
+
+## Question Format
+
+### MCQ (Multiple Choice)
+
+```yaml
+- id: "q1"
+  type: "mcq"
+  text: "Question text"
+  multi_select: false  # true for checkboxes
+  options:
+    - id: "a"
+      text: "Option A"
+    - id: "b"
+      text: "Option B"
+  correct: ["a"]
+```
+
+### Text Question
+
+```yaml
+- id: "q2"
+  type: "text"
+  text: "Question text"
+  correct: ["answer1", "answer2"]  # Case-insensitive matching
+```
+
+## CLI Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| --lessons | Built-in | Lessons directory path |
+| --port | 3000 | Frontend port |
+| --backend-port | 8000 | Backend port |
+| --host | 0.0.0.0 | Host address |
+
+## Python API
+
+```python
+from pyshala import run_app
+
+run_app(
+    lessons_path="/path/to/lessons",
+    port=3000,
+    backend_port=8000,
+)
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| LESSONS_PATH | Path to lessons directory |
+| PYSHALA_CONFIG | Path to config.yaml |
+
+## Docker
+
+```bash
+docker run -p 3000:3000 -v /lessons:/lessons pyshala
+```
+
+## Links
+
+- Documentation: https://dkedar7.github.io/pyshala
+- GitHub: https://github.com/dkedar7/pyshala
+- PyPI: https://pypi.org/project/pyshala
+
+## License
+
+MIT License
