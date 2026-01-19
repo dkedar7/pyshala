@@ -90,7 +90,7 @@ app.run()
 
 ## Creating Lessons
 
-Lessons are defined using YAML files organized into modules.
+Lessons are defined using YAML files organized into modules. For more information about writing lessons, see [LESSONS.md](lessons.md).
 
 ### Directory Structure
 
